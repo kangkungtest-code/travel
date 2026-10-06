@@ -46,6 +46,9 @@ class BuatBookingAction
         array $dokumen,
         string $mataUang,
     ): Order {
+        // Baca ulang dari database (status aktif & tarif terbaru, bukan salinan di memori).
+        $tipe = $tipe->fresh() ?? throw new TokoException(__('This vehicle is not available for the selected option.'));
+        $lokasi = $lokasi->fresh() ?? throw new TokoException(__('This vehicle is not available for the selected option.'));
         $tarif = $tipe->is_active ? $tipe->tarifUntuk($mode) : null;
         if (! $tarif || ! $lokasi->is_active) {
             throw new TokoException(__('This vehicle is not available for the selected option.'));
