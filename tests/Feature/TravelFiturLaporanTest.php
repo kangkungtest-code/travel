@@ -60,7 +60,7 @@ class TravelFiturLaporanTest extends TestCase
         $this->assertNull($this->mobil->tarifUntuk(Tarif::SOPIR));
         $this->assertSame(400000.0, $this->mobil->fresh()->hargaMulai());
 
-        $this->get(route('sewa.index'))->assertOk()->assertSee('Toyota Avanza')->assertDontSee('Honda Scoopy')->assertDontSee('With driver');
+        $this->get(route('sewa.index'))->assertOk()->assertSee('Toyota Avanza')->assertDontSee('Honda Scoopy')->assertDontSee('Dengan sopir'); // paket 1 = Bahasa Indonesia saja
     }
 
     public function test_paket_2_membuka_sopir_dan_motor(): void
@@ -70,7 +70,7 @@ class TravelFiturLaporanTest extends TestCase
         $this->assertSame(['lepas_kunci', 'sopir'], array_keys(config('travel.mode')));
         $this->assertArrayHasKey('motor', config('travel.jenis'));
         $this->assertArrayNotHasKey('bus', config('travel.jenis'));
-        $this->get(route('sewa.index'))->assertSee('Honda Scoopy')->assertSee('With driver');
+        $this->get(route('sewa.index'))->assertSee('Honda Scoopy')->assertSee('Dengan sopir');
     }
 
     public function test_hanya_sopir_kalau_lepas_kunci_dimatikan(): void
