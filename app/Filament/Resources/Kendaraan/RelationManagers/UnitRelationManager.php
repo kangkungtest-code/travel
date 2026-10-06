@@ -44,7 +44,7 @@ class UnitRelationManager extends RelationManager
                     }),
                 Select::make('lokasi_id')
                     ->label('Lokasi pool')
-                    ->relationship('lokasi', 'kota', fn ($q) => $q->orderBy('urutan'))
+                    ->relationship('lokasi', 'kota', fn ($query) => $query->orderBy('urutan'))
                     ->getOptionLabelFromRecordUsing(fn (Lokasi $l) => $l->nama('id').' — '.$l->kota)
                     ->default(fn () => Lokasi::aktif()->value('id'))
                     ->required()
@@ -68,7 +68,7 @@ class UnitRelationManager extends RelationManager
     {
         return $table
             ->recordTitleAttribute('plat_nomor')
-            ->modifyQueryUsing(fn ($q) => $q->with('lokasi'))
+            ->modifyQueryUsing(fn ($query) => $query->with('lokasi'))
             ->defaultSort('plat_nomor')
             ->columns([
                 TextColumn::make('plat_nomor')->label('Plat')->weight('bold')->searchable(),

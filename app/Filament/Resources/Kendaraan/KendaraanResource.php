@@ -142,12 +142,13 @@ class KendaraanResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->modifyQueryUsing(fn (Builder $q) => $q->with('foto')->withCount([
+            ->modifyQueryUsing(fn (Builder $query) => $query->with('foto')->withCount([
                 'unit',
                 'unit as unit_siap_count' => fn (Builder $u) => $u->where('status', UnitKendaraan::SIAP),
             ]))
             ->defaultSort('urutan')
             ->reorderable('urutan')
+            ->paginated(false)
             ->columns([
                 ImageColumn::make('gambar')
                     ->label('')
@@ -157,9 +158,9 @@ class KendaraanResource extends Resource
                     ->label('Kendaraan')
                     ->state(fn (TipeKendaraan $t) => $t->nama('id'))
                     ->description(fn (TipeKendaraan $t) => $t->ringkasan('id'))
-                    ->searchable(query: fn (Builder $q, string $cari) => $q->where(fn ($w) => $w
-                        ->where('slug', 'like', '%'.str($cari)->slug().'%')
-                        ->orWhere('nama_terjemahan', 'like', '%'.$cari.'%'))),
+                    ->searchable(query: fn (Builder $query, string $search) => $query->where(fn ($w) => $w
+                        ->where('slug', 'like', '%'.str($search)->slug().'%')
+                        ->orWhere('nama_terjemahan', 'like', '%'.$search.'%'))),
                 TextColumn::make('jenis')
                     ->label('Jenis')
                     ->formatStateUsing(fn (string $state) => Spesifikasi::label('jenis', $state, 'id'))
