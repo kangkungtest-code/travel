@@ -100,6 +100,12 @@ jobs:
           git commit -m "Tambah composer.lock (dibuat otomatis oleh CI)"
           git push origin "HEAD:${GITHUB_REF_NAME}"
 
+      # Server (deploy/tarik.sh di repo e-commerce) membaca branch ini lewat git ls-remote untuk
+      # tahu commit mana yang lulus tes, tanpa memakai kuota API GitHub.
+      - name: Tandai lulus tes
+        if: success() && steps.app.outputs.exists == 'true'
+        run: git push --force origin "HEAD:refs/heads/lulus-tes/${GITHUB_REF_NAME}"
+
       - name: Ringkas error
         if: failure()
         run: |
