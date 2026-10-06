@@ -1,0 +1,42 @@
+<?php
+
+// Pesan validasi yang dipakai storefront. Aturan lain jatuh ke bahasa Inggris.
+return [
+    'boolean' => ':attribute harus benar atau salah.',
+    'confirmed' => 'Konfirmasi :attribute tidak cocok.',
+    'current_password' => 'Password salah.',
+    'email' => ':attribute harus berupa alamat email yang valid.',
+    'in' => ':attribute yang dipilih tidak valid.',
+    'integer' => ':attribute harus berupa angka bulat.',
+    'max' => ['numeric' => ':attribute maksimal :max.', 'string' => ':attribute maksimal :max karakter.'],
+    'min' => ['numeric' => ':attribute minimal :min.', 'string' => ':attribute minimal :min karakter.'],
+    'regex' => 'Format :attribute tidak valid.',
+    'required' => ':attribute wajib diisi.',
+    'string' => ':attribute harus berupa teks.',
+    'unique' => ':attribute sudah dipakai.',
+    'uuid' => ':attribute tidak valid.',
+    'password' => [
+        'letters' => ':attribute harus berisi minimal satu huruf.',
+        'mixed' => ':attribute harus berisi huruf besar dan kecil.',
+        'numbers' => ':attribute harus berisi minimal satu angka.',
+        'symbols' => ':attribute harus berisi minimal satu simbol.',
+        'uncompromised' => ':attribute ini pernah bocor di internet. Pilih :attribute lain.',
+    ],
+    'attributes' => [
+        'nama_lengkap' => 'Nama lengkap',
+        'email' => 'Email',
+        'password' => 'Password',
+        'password_lama' => 'Password saat ini',
+        'label' => 'Label',
+        'nama_penerima' => 'Nama penerima',
+        'telepon' => 'Telepon',
+        'negara' => 'Negara',
+        'kota' => 'Kota',
+        'kode_pos' => 'Kode pos',
+        'detail_alamat' => 'Alamat lengkap',
+        'qty' => 'Jumlah',
+        'address_id' => 'Alamat',
+        'bahasa_preferensi' => 'Bahasa',
+        'mata_uang_preferensi' => 'Mata uang',
+    ],
+];

@@ -1,0 +1,149 @@
+name: Deploy
+
+# Tiap push:
+#   1. job `test`  — composer install, migrate:fresh --seed ke MySQL, php artisan test.
+#                    Kalau composer.lock belum ada, dibuat di sini lalu di-commit balik
+#                    ke branch yang sama.
+#   2. job `deploy` — menunggu server menarik commit ini. Server (cron deploy/tarik.sh di
+#        repo kangkungtest-code/e-commerce) memasang:
+#        claude-dev -> /var/www/travel (https://kangkungtravel.duckdns.org, database travel_dev,
+#                      APP_ENV=dev). Identitas situs di toko/profil.php.
+#
+# Repo travel TIDAK punya secret. Provision server, deploy tarik, dan Super Admin diatur dari
+# file infrastruktur repo e-commerce.
+
+on:
+  push:
+    branches: [claude-dev, main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-${{ github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: toko_ci
+        ports: ["3306:3306"]
+        options: >-
+          --health-cmd="mysqladmin ping -proot"
+          --health-interval=5s --health-timeout=5s --health-retries=20
+    env:
+      DB_CONNECTION: mysql
+      DB_HOST: 127.0.0.1
+      DB_PORT: 3306
+      DB_DATABASE: toko_ci
+      DB_USERNAME: root
+      DB_PASSWORD: root
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Cek ada aplikasi Laravel
+        id: app
+        run: |
+          if [ -f artisan ]; then echo "exists=true" >> "$GITHUB_OUTPUT"; else echo "exists=false" >> "$GITHUB_OUTPUT"; fi
+
+      - uses: shivammathur/setup-php@v2
+        if: steps.app.outputs.exists == 'true'
+        with:
+          php-version: "8.5"
+          extensions: mbstring, intl, pdo_mysql, bcmath, zip, gd
+          coverage: none
+
+      - name: Composer
+        id: composer
+        if: steps.app.outputs.exists == 'true'
+        run: |
+          set -o pipefail
+          if [ -f composer.lock ]; then
+            composer install --no-interaction --prefer-dist --no-progress 2>&1 | tee -a /tmp/ci.log
+            echo "lock_baru=false" >> "$GITHUB_OUTPUT"
+          else
+            composer update --no-interaction --prefer-dist --no-progress 2>&1 | tee -a /tmp/ci.log
+            echo "lock_baru=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Migrate & seed ke MySQL
+        if: steps.app.outputs.exists == 'true'
+        env:
+          ADMIN_EMAIL: ci-admin@toko.test
+          ADMIN_PASSWORD: ci-password
+        run: |
+          set -o pipefail
+          cp .env.example .env
+          php artisan key:generate 2>&1 | tee -a /tmp/ci.log
+          php artisan migrate:fresh --seed --force 2>&1 | tee -a /tmp/ci.log
+          php artisan migrate:rollback --force 2>&1 | tee -a /tmp/ci.log
+          php artisan migrate --force 2>&1 | tee -a /tmp/ci.log
+
+      - name: Test
+        if: steps.app.outputs.exists == 'true'
+        run: |
+          set -o pipefail
+          php artisan test 2>&1 | tee -a /tmp/ci.log
+
+      - name: Commit composer.lock
+        if: steps.composer.outputs.lock_baru == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add composer.lock
+          git commit -m "Tambah composer.lock (dibuat otomatis oleh CI)"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
+
+      - name: Ringkas error
+        if: failure()
+        run: |
+          [ -f /tmp/ci.log ] || exit 0
+          msg=$(tail -n 60 /tmp/ci.log | sed -e 's/%/%25/g' -e 's/\r/%0D/g' | awk '{printf "%s%%0A", $0}')
+          echo "::error title=Test gagal (60 baris terakhir)::${msg}"
+
+  # Sejak 5 Okt 2026 jaringan Biznet memblokir sambungan dari GitHub ke server, jadi
+  # deploy tidak lagi lewat SSH. Server sendiri yang mengecek GitHub tiap menit
+  # (deploy/tarik.sh, dipasang lewat deploy/pasang-tarik.sh) dan memasang commit yang
+  # job `test`-nya lulus. Job ini hanya menunggu & melaporkan hasilnya dari
+  # <url>/deploy-status.txt. .env di server tidak lagi diisi dari secret GitHub
+  # (kunci pembayaran diisi di panel admin → Pengaturan → Pembayaran).
+  deploy:
+    needs: test
+    # Hanya claude-dev yang punya situs di server (main belum).
+    if: github.ref_name == 'claude-dev'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Tentukan target
+        id: target
+        run: |
+          echo "url=https://kangkungtravel.duckdns.org" >> "$GITHUB_OUTPUT"
+
+      - name: Tunggu server memasang commit ini
+        env:
+          URL: ${{ steps.target.outputs.url }}
+        run: |
+          baris=""
+          for i in $(seq 1 48); do
+            isi="$(curl -fsS --max-time 10 "${URL}/deploy-status.txt?t=$(date +%s)" 2>/dev/null || true)"
+            baris="$(printf '%s\n' "$isi" | head -1)"
+            case "$baris" in "${GITHUB_SHA} "*) break ;; esac
+            sleep 15
+          done
+          case "$baris" in
+            "${GITHUB_SHA} berhasil"*)
+              situs="$(printf '%s\n' "$isi" | grep -m1 '^Situs:' || true)"
+              echo "::notice title=Deploy ${URL}::Terpasang di server. ${situs}" ;;
+            "${GITHUB_SHA} "*)
+              msg=$(printf '%s\n' "$isi" | sed -e 's/%/%25/g' -e 's/\r/%0D/g' | awk '{printf "%s%%0A", $0}')
+              echo "::error title=Deploy gagal di server::${msg}"
+              exit 1 ;;
+            *)
+              echo "::warning title=Deploy::Server belum melaporkan commit ini dalam 12 menit (atau ${URL} tidak bisa dibuka dari GitHub). Cek ${URL}/deploy-status.txt" ;;
+          esac

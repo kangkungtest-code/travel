@@ -1,0 +1,23 @@
+{
+    ":count Ukuran": "{1} :count size|[2,*] :count sizes",
+    ":count Warna": "{1} :count color|[2,*] :count colors",
+    "Abu-abu": "Grey",
+    "Aksesoris": "Accessories",
+    "All Size": "One size",
+    "Biru Denim": "Denim blue",
+    "Celana": "Pants",
+    "Cokelat": "Brown",
+    "Dress": "Dresses",
+    "Hijau Sage": "Sage",
+    "Hijau Zaitun": "Olive",
+    "Hitam": "Black",
+    "Jaket": "Jackets",
+    "Kaos": "T-shirts",
+    "Kemeja": "Shirts",
+    "Krem": "Cream",
+    "Merah Bata": "Brick red",
+    "Navy": "Navy",
+    "Putih": "White",
+    "Ukuran": "Size",
+    "Warna": "Color"
+}

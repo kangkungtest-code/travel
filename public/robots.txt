@@ -1,0 +1,12 @@
+# Halaman pribadi tidak perlu dirayapi. Server dev/demo juga mengirim
+# header "X-Robots-Tag: noindex" di semua halaman sehingga tidak masuk Google.
+# Sitemap: <domain>/sitemap.xml (daftarkan di Google Search Console).
+User-agent: *
+Disallow: /admin
+Disallow: /akun
+Disallow: /keranjang
+Disallow: /checkout
+Disallow: /masuk
+Disallow: /daftar
+Disallow: /webhook
+Disallow: /chatbot

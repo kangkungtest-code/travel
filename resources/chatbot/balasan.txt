@@ -1,0 +1,119 @@
+# ================================================================
+#  File balasan chatbot. Tulisan {toko} otomatis diganti nama toko.
+# ================================================================
+#  Cara menulis:
+#  - Satu topik diawali baris "== nama-topik" (huruf kecil, tanpa spasi).
+#  - "kata:" berisi kata kunci, dipisah koma. Boleh campur 3 bahasa.
+#    Makin banyak kata kunci yang cocok, makin besar peluang topik ini dipilih.
+#  - "tanya.id / tanya.en / tanya.zh_TW": pertanyaan contoh, muncul sebagai
+#    tombol saran. Boleh dikosongkan kalau topik ini tidak perlu jadi tombol.
+#  - "jawab.id / jawab.en / jawab.zh_TW": jawaban. Kalau jawaban lebih dari satu
+#    baris, baris lanjutan diawali spasi.
+#  - "admin: ya" berarti di bawah jawaban muncul tombol WhatsApp / LINE admin.
+#  - Baris yang diawali # adalah catatan, tidak dibaca chatbot.
+#  - Topik "sapaan" muncul saat chat dibuka, "tidak-ketemu" dipakai kalau
+#    tidak ada topik yang cocok. Keduanya wajib ada.
+# ================================================================
+
+== sapaan
+jawab.id: Halo! Saya asisten otomatis {toko}. Tanyakan soal ukuran, ongkir, pembayaran, atau retur. Kalau butuh bantuan langsung, saya hubungkan ke admin.
+jawab.en: Hi! I'm {toko}'s automated assistant. Ask me about sizes, shipping, payment or returns. If you need a person, I'll connect you to our team.
+jawab.zh_TW: 您好！我是 {toko} 的自動客服。可以詢問尺寸、運費、付款或退貨問題。如需真人協助，我會幫您聯繫客服。
+
+== tidak-ketemu
+admin: ya
+jawab.id: Maaf, saya belum punya jawaban untuk itu. Coba pakai kata lain, atau tanyakan langsung ke admin lewat tombol di bawah.
+jawab.en: Sorry, I don't have an answer for that yet. Try different words, or ask our team directly with the buttons below.
+jawab.zh_TW: 抱歉，我還無法回答這個問題。請換個說法，或透過下方按鈕直接詢問客服。
+
+== salam
+kata: halo, hallo, hai, hi, hello, hey, pagi, siang, sore, malam, selamat pagi, selamat siang, selamat malam, permisi, 你好, 哈囉, 嗨, 早安, 午安, 晚安
+jawab.id: Halo! Ada yang bisa saya bantu? Pilih salah satu pertanyaan di bawah atau ketik pertanyaanmu.
+jawab.en: Hello! How can I help? Pick a question below or type your own.
+jawab.zh_TW: 您好！有什麼可以幫您的嗎？請選擇下方問題或直接輸入。
+
+== ongkir
+kata: ongkir, ongkos kirim, biaya kirim, pengiriman, kirim, kurir, shipping, ship, delivery, deliver, courier, 運費, 運送, 寄送, 配送
+tanya.id: Berapa ongkirnya?
+tanya.en: How much is shipping?
+tanya.zh_TW: 運費多少？
+jawab.id: Ongkir dihitung otomatis saat checkout dari negara tujuan dan total berat pesanan. Saat ini kami mengirim ke Indonesia dan Taiwan.
+jawab.en: Shipping is calculated at checkout from the destination country and the total weight. We currently ship to Indonesia and Taiwan.
+jawab.zh_TW: 運費會在結帳時依目的地國家與總重量自動計算。目前寄送至印尼與台灣。
+
+== lama-kirim
+kata: berapa lama, lama kirim, lama pengiriman, berapa hari, estimasi, sampai kapan, kapan sampai, how long, how long does, how many days, arrive, delivery time, shipping time, eta, 多久, 幾天, 什麼時候到
+tanya.id: Berapa lama sampai?
+tanya.en: How long does delivery take?
+tanya.zh_TW: 多久會送達？
+jawab.id: Dalam negeri biasanya 2–5 hari kerja. Ke Taiwan 5–10 hari kerja setelah pesanan dikirim. Nomor resi dikirim lewat email dan muncul di halaman Akun → Pesanan.
+jawab.en: Domestic orders usually take 2–5 business days. Taiwan takes 5–10 business days after dispatch. The tracking number is emailed to you and shown under Account → Orders.
+jawab.zh_TW: 印尼境內約 2–5 個工作天，寄往台灣約出貨後 5–10 個工作天。追蹤號碼會寄到您的信箱，也可在「帳戶 → 訂單」查看。
+
+== ukuran
+kata: ukuran, size, sizes, size chart, tabel ukuran, muat, kekecilan, kebesaran, fit, 尺寸, 尺碼, 大小
+tanya.id: Bagaimana memilih ukuran?
+tanya.en: How do I choose my size?
+tanya.zh_TW: 如何選擇尺寸？
+jawab.id: Ukuran kami regular fit standar Asia. Kalau ragu di antara dua ukuran, pilih yang lebih besar. Untuk ukuran detail (lingkar dada, panjang), tanyakan ke admin.
+jawab.en: Our sizes are regular fit, Asian sizing. If you are between two sizes, size up. For exact measurements (chest, length), ask our team.
+jawab.zh_TW: 本店為亞洲標準版型。若介於兩個尺寸之間，建議選大一號。如需詳細尺寸（胸圍、衣長），請詢問客服。
+admin: ya
+
+== bayar
+kata: bayar, pembayaran, transfer, qris, va, virtual account, paypal, payment, pay, 付款, 支付, 轉帳
+tanya.id: Bisa bayar pakai apa?
+tanya.en: How can I pay?
+tanya.zh_TW: 有哪些付款方式？
+jawab.id: Kami akan menerima PayPal (USD/TWD), QRIS, dan Virtual Account bank Indonesia. Pesanan harus dibayar dalam 24 jam, kalau tidak akan dibatalkan otomatis.
+jawab.en: We accept PayPal (USD/TWD), QRIS and Indonesian bank virtual accounts. Orders must be paid within 24 hours or they are cancelled automatically.
+jawab.zh_TW: 我們接受 PayPal（美元／新台幣）、QRIS 及印尼銀行虛擬帳號。訂單須於 24 小時內付款，逾期將自動取消。
+
+== retur
+kata: retur, return, tukar, refund, uang kembali, rusak, cacat, salah kirim, sobek, robek, defect, damaged, wrong item, exchange, 退貨, 退款, 換貨, 瑕疵, 寄錯
+tanya.id: Barang rusak, bisa retur?
+tanya.en: My item is damaged. Can I return it?
+tanya.zh_TW: 商品有瑕疵可以退貨嗎？
+jawab.id: Bisa, untuk barang cacat atau salah kirim. Buka Akun → Pesanan, pilih pesanannya, lalu klik "Barang rusak atau salah kirim?" paling lambat 7 hari setelah pesanan selesai. Sertakan foto. Ongkir retur ditanggung toko.
+jawab.en: Yes, for defective or wrong items. Go to Account → Orders, open the order and choose "Item arrived damaged or wrong?" within 7 days after delivery. Add a photo. We cover the return shipping.
+jawab.zh_TW: 可以，限商品瑕疵或寄錯。請至「帳戶 → 訂單」開啟該訂單，於完成後 7 天內點選「商品有瑕疵或寄錯了嗎？」並附上照片。退貨運費由本店負擔。
+
+== status-pesanan
+kata: pesanan saya, status pesanan, cek pesanan, resi, lacak, tracking, track, order status, my order, where is my order, 訂單, 追蹤, 查詢訂單
+tanya.id: Di mana pesanan saya?
+tanya.en: Where is my order?
+tanya.zh_TW: 我的訂單在哪裡？
+jawab.id: Status dan nomor resi ada di Akun → Pesanan setelah kamu masuk. Kalau ada yang tidak sesuai, hubungi admin dengan menyebutkan nomor pesanan (contoh: KA-261001-ABCDE).
+jawab.en: You can see the status and tracking number under Account → Orders after signing in. If something looks wrong, contact our team with your order number (e.g. KA-261001-ABCDE).
+jawab.zh_TW: 登入後可在「帳戶 → 訂單」查看狀態與追蹤號碼。若有問題，請提供訂單編號（例如 KA-261001-ABCDE）聯繫客服。
+admin: ya
+
+== batal
+kata: batal, batalkan, cancel, ganti alamat, ubah pesanan, change address, 取消, 更改地址
+jawab.id: Pesanan yang belum dibayar bisa kamu batalkan sendiri dari Akun → Pesanan. Untuk pesanan yang sudah dibayar atau ganti alamat, hubungi admin secepatnya.
+jawab.en: You can cancel an unpaid order yourself under Account → Orders. For paid orders or address changes, contact our team as soon as possible.
+jawab.zh_TW: 尚未付款的訂單可在「帳戶 → 訂單」自行取消。已付款訂單或需更改地址，請盡快聯繫客服。
+admin: ya
+
+== stok
+kata: stok, ready, tersedia, habis, restock, kapan ada, ada, masih ada, ada ga, ada gak, in stock, sold out, available, do you have, 庫存, 有貨, 補貨, 售完, 還有
+jawab.id: Stok tiap warna dan ukuran tampil langsung di halaman produk. Kalau tertulis Habis, tanyakan ke admin soal jadwal restock.
+jawab.en: Stock for each color and size is shown on the product page. If it says Sold out, ask our team about restocking.
+jawab.zh_TW: 每個顏色與尺寸的庫存都會顯示在商品頁面。若顯示已售完，可詢問客服補貨時間。
+admin: ya
+
+== bahan
+kata: bahan, kain, katun, linen, denim, cuci, perawatan, luntur, material, fabric, cotton, wash, care, 材質, 布料, 洗滌, 棉
+jawab.id: Bahan setiap produk tertulis di deskripsinya. Cuci dengan air dingin, jangan pakai pemutih, dan jemur tanpa terik matahari langsung supaya warnanya awet.
+jawab.en: Each product's material is listed in its description. Wash cold, no bleach, and dry out of direct sunlight to keep the color.
+jawab.zh_TW: 各商品材質請見商品說明。建議冷水洗滌、勿使用漂白劑、避免陽光直曬，以保持顏色。
+
+== admin
+kata: admin, cs, customer service, manusia, orang, hubungi, kontak, wa, whatsapp, line, telepon, contact, human, agent, 客服, 聯繫, 聯絡, 真人
+tanya.id: Mau bicara dengan admin
+tanya.en: Talk to a person
+tanya.zh_TW: 我要找真人客服
+jawab.id: Tentu, silakan hubungi admin lewat WhatsApp atau LINE di bawah.
+jawab.en: Sure, reach our team on WhatsApp or LINE below.
+jawab.zh_TW: 好的，請透過下方 WhatsApp 或 LINE 聯繫客服。
+admin: ya
