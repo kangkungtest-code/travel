@@ -38,7 +38,17 @@ class Dashboard extends BaseDashboard
 
     public function getWidgets(): array
     {
-        return self::bolehLihatLaporan() ? parent::getWidgets() : [];
+        // Dashboard travel. Widget e-commerce (produk, stok, kategori) tetap ada sebagai kelas
+        // tapi tidak ditampilkan.
+        return self::bolehLihatLaporan() ? [
+            \App\Filament\Widgets\RingkasanSewa::class,
+            \App\Filament\Widgets\JadwalArmada::class,
+            \App\Filament\Widgets\GrafikPenjualan::class,
+            \App\Filament\Widgets\UtilisasiArmada::class,
+            \App\Filament\Widgets\PendapatanKendaraan::class,
+            \App\Filament\Widgets\StatusOrder::class,
+            \App\Filament\Widgets\PenjualanPerMetode::class,
+        ] : [];
     }
 
     public function filtersForm(Schema $schema): Schema

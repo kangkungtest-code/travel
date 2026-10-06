@@ -67,6 +67,10 @@ class TipeKendaraan extends Model
     /** Tarif aktif untuk mode tertentu, atau null kalau mode itu tidak ditawarkan. */
     public function tarifUntuk(string $mode): ?Tarif
     {
+        if (! array_key_exists($mode, config('travel.mode'))) {
+            return null; // mode dimatikan lewat Fitur & paket
+        }
+
         return $this->relationLoaded('tarif')
             ? $this->tarif->first(fn (Tarif $t) => $t->mode === $mode && $t->is_active)
             : $this->tarif()->where('mode', $mode)->where('is_active', true)->first();
@@ -75,7 +79,8 @@ class TipeKendaraan extends Model
     /** Harga harian termurah dari tarif aktif ("mulai dari"), atau null. */
     public function hargaMulai(): ?float
     {
-        $tarif = $this->relationLoaded('tarif') ? $this->tarif->where('is_active', true) : $this->tarif()->where('is_active', true)->get();
+        $tarif = ($this->relationLoaded('tarif') ? $this->tarif->where('is_active', true) : $this->tarif()->where('is_active', true)->get())
+            ->whereIn('mode', array_keys(config('travel.mode')));
 
         return $tarif->min('harga_harian');
     }
@@ -102,7 +107,8 @@ class TipeKendaraan extends Model
     public function scopeTampil(Builder $query): Builder
     {
         return $query->where('is_active', true)
-            ->whereHas('tarif', fn (Builder $t) => $t->where('is_active', true))
+            ->whereIn('jenis', array_keys(config('travel.jenis')))
+            ->whereHas('tarif', fn (Builder $t) => $t->where('is_active', true)->whereIn('mode', array_keys(config('travel.mode'))))
             ->whereHas('unit', fn (Builder $u) => $u->where('status', UnitKendaraan::SIAP))
             ->orderBy('urutan')->orderBy('slug');
     }

@@ -5,11 +5,11 @@ namespace App\Filament\Widgets;
 use App\Support\Laporan;
 use Filament\Support\RawJs;
 
-class PenjualanPerMetode extends GrafikDasar
+class PendapatanKendaraan extends GrafikDasar
 {
-    protected static ?int $sort = 5;
+    protected static ?int $sort = 4;
 
-    protected ?string $heading = 'Pendapatan per metode bayar (IDR)';
+    protected ?string $heading = 'Pendapatan per kendaraan';
 
     protected function getType(): string
     {
@@ -18,11 +18,11 @@ class PenjualanPerMetode extends GrafikDasar
 
     protected function getData(): array
     {
-        $data = Laporan::dariFilter($this->pageFilters)->perMetodeBayar();
+        $data = Laporan::dariFilter($this->pageFilters)->pendapatanPerKendaraan();
 
         return [
             'datasets' => [[
-                'label' => 'Penjualan',
+                'label' => 'Pendapatan',
                 'data' => $data->values()->all(),
                 'backgroundColor' => self::WARNA,
                 'borderRadius' => 4,

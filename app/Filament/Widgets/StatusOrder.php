@@ -9,7 +9,7 @@ class StatusOrder extends GrafikDasar
 {
     protected static ?int $sort = 6;
 
-    protected ?string $heading = 'Status order (dibuat di periode ini)';
+    protected ?string $heading = 'Status booking (dibuat di periode ini)';
 
     protected function getType(): string
     {

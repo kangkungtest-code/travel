@@ -22,6 +22,12 @@ use UnitEnum;
 
 class ReturnRequestResource extends Resource
 {
+    /** Travel: menu toko barang disembunyikan (config travel.menu_toko_barang). */
+    public static function shouldRegisterNavigation(): bool
+    {
+        return config('travel.menu_toko_barang') && parent::shouldRegisterNavigation();
+    }
+
     protected static ?string $model = ReturnRequest::class;
 
     protected static string | BackedEnum | null $navigationIcon = Heroicon::OutlinedArrowUturnLeft;

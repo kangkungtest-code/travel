@@ -18,6 +18,12 @@ use UnitEnum;
 
 class ProductResource extends Resource
 {
+    /** Travel: menu toko barang disembunyikan (config travel.menu_toko_barang). */
+    public static function shouldRegisterNavigation(): bool
+    {
+        return config('travel.menu_toko_barang') && parent::shouldRegisterNavigation();
+    }
+
     protected static ?string $model = Product::class;
 
     protected static string | BackedEnum | null $navigationIcon = Heroicon::OutlinedShoppingBag;

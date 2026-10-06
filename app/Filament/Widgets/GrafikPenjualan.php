@@ -12,7 +12,7 @@ class GrafikPenjualan extends GrafikDasar
 
     protected int|string|array $columnSpan = 'full';
 
-    protected ?string $heading = 'Penjualan harian (IDR)';
+    protected ?string $heading = 'Pendapatan harian (IDR)';
 
     protected ?string $description = 'Berdasarkan tanggal bayar.';
 

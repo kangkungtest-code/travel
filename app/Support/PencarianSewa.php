@@ -38,7 +38,9 @@ final class PencarianSewa
             }
         }
 
-        $mode = in_array($request->query('mode'), array_keys(config('travel.mode')), true) ? $request->query('mode') : Tarif::LEPAS_KUNCI;
+        $mode = in_array($request->query('mode'), array_keys(config('travel.mode')), true)
+            ? $request->query('mode')
+            : (array_key_first(config('travel.mode')) ?? Tarif::LEPAS_KUNCI);
 
         $baca = function (string $kunci) use ($request, $zona, &$galat): ?CarbonImmutable {
             $nilai = $request->query($kunci);

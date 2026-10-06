@@ -15,6 +15,14 @@
 return [
     // kunci => [nama, keterangan, siap?]. siap=false: fitur belum dibangun (tidak bisa dinyalakan).
     'fitur' => [
+        // Travel (sewa kendaraan). Sewa mobil selalu ada; lepas kunci / dengan sopir minimal satu menyala.
+        'mode_lepas_kunci' => ['Sewa lepas kunci', 'Penyewa menyetir sendiri (wajib unggah KTP/paspor & SIM). Kalau kedua mode mati, lepas kunci tetap dipakai.', true],
+        'mode_sopir' => ['Sewa dengan sopir', 'Kendaraan disewa bersama sopir dari toko.', true],
+        'sewa_motor' => ['Sewa motor', 'Jenis kendaraan motor/skuter di katalog & pencarian.', true],
+        'sewa_bus' => ['Sewa minibus & bus', 'Jenis kendaraan minibus dan bus untuk rombongan.', true],
+        'paket_wisata' => ['Paket wisata & open trip', 'Paket tour dengan itinerary, jadwal & kuota.', false],
+        'bayar_dp' => ['Bayar DP', 'Penyewa bisa membayar uang muka, pelunasan menyusul.', false],
+        'antar_jemput' => ['Antar-jemput kendaraan', 'Kendaraan diantar ke hotel/bandara dengan biaya per zona.', false],
         'login_google' => ['Login Google', 'Tombol "Lanjut dengan Google" di halaman masuk/daftar.', true],
         'login_line' => ['Login LINE', 'Tombol "Lanjut dengan LINE" di halaman masuk/daftar.', true],
         'chatbot' => ['Chatbot', 'Gelembung tanya-jawab otomatis di semua halaman toko.', true],
@@ -31,9 +39,10 @@ return [
 
     // nomor => daftar fitur. Nama paket diatur di panel (bawaan "Paket 1/2/3").
     'paket' => [
-        1 => [],
-        2 => ['login_google', 'login_line', 'chatbot', 'retur', 'email_pemilik', 'laporan_lengkap', 'staf'],
+        1 => [], // tanpa saklar mode = lepas kunci saja
+        2 => ['mode_lepas_kunci', 'mode_sopir', 'sewa_motor', 'login_google', 'login_line', 'chatbot', 'retur', 'email_pemilik', 'laporan_lengkap', 'staf'],
         3 => [
+            'mode_lepas_kunci', 'mode_sopir', 'sewa_motor', 'sewa_bus', 'paket_wisata', 'bayar_dp', 'antar_jemput',
             'login_google', 'login_line', 'chatbot', 'retur', 'email_pemilik', 'laporan_lengkap', 'staf',
             'paypal', 'multi_bahasa', 'multi_mata_uang', 'kirim_luar_negeri', 'aplikasi_mobile',
         ],

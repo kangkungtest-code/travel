@@ -70,11 +70,30 @@ class ArmadaDemoSeeder extends Seeder
             }
         }
 
+        $this->gantiFaqBarang();
+
         foreach ([
             ['Libur Natal & Tahun Baru', '2026-12-20', '2027-01-05', 30],
             ['Libur sekolah pertengahan tahun', '2027-06-26', '2027-07-11', 15],
         ] as [$nama, $mulai, $selesai, $persen]) {
             TarifMusim::firstOrCreate(['nama' => $nama], ['mulai' => $mulai, 'selesai' => $selesai, 'kenaikan_persen' => $persen, 'is_active' => true]);
+        }
+    }
+
+    /**
+     * Instalasi yang dulu terisi FAQ toko baju (sebelum jadi travel): ganti sekali dengan
+     * FAQ sewa dari data travel. FAQ buatan admin tidak disentuh setelah itu.
+     */
+    private function gantiFaqBarang(): void
+    {
+        $file = base_path('toko/katalog-travel.php');
+        if (! is_file($file) || ! \App\Models\Faq::query()->where('pertanyaan_terjemahan', 'like', '%choose my size%')->exists()) {
+            return;
+        }
+
+        \App\Models\Faq::query()->delete();
+        foreach ((require $file)['faq'] as $i => $faq) {
+            \App\Models\Faq::create(['pertanyaan_terjemahan' => $faq['q'], 'jawaban_terjemahan' => $faq['a'], 'urutan' => $i + 1, 'is_active' => true]);
         }
     }
 

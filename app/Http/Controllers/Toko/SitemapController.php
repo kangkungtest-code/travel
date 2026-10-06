@@ -30,6 +30,12 @@ class SitemapController extends Controller
                 'lastmod' => $p->updated_at,
                 'gambar' => $p->images->map->url()->all(),
             ]))
+            ->push(['loc' => route('sewa.index')])
+            ->merge(\App\Models\TipeKendaraan::query()->tampil()->with('foto')->get()->map(fn (\App\Models\TipeKendaraan $t) => [
+                'loc' => route('sewa.show', $t),
+                'lastmod' => $t->updated_at,
+                'gambar' => $t->foto->map->url()->all(),
+            ]))
             ->push(['loc' => route('faq')])
             ->merge(HalamanKebijakan::query()->tampil()->get()->map(fn (HalamanKebijakan $h) => [
                 'loc' => route('kebijakan', $h),

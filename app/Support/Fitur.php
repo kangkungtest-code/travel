@@ -98,6 +98,8 @@ class Fitur
             'toko.required_locales' => config('toko.required_locales'),
             'toko.currencies' => config('toko.currencies'),
             'toko.negara' => config('toko.negara'),
+            'travel.mode' => config('travel.mode'),
+            'travel.jenis' => config('travel.jenis'),
         ];
         config(['toko._asli' => $asli]);
         config($asli);
@@ -117,6 +119,15 @@ class Fitur
         if (! in_array('kirim_luar_negeri', $aktif, true)) {
             config(['toko.negara' => ['ID' => $asli['toko.negara']['ID'] ?? 'Indonesia']]);
         }
+
+        // Travel: mode sewa & jenis kendaraan yang ditawarkan.
+        $mode = array_filter($asli['travel.mode'] ?? [], fn ($k) => in_array($k === 'sopir' ? 'mode_sopir' : 'mode_lepas_kunci', $aktif, true), ARRAY_FILTER_USE_KEY);
+        config(['travel.mode' => $mode ?: array_intersect_key($asli['travel.mode'] ?? [], ['lepas_kunci' => true])]);
+        config(['travel.jenis' => array_filter($asli['travel.jenis'] ?? [], fn ($k) => match ($k) {
+            'motor' => in_array('sewa_motor', $aktif, true),
+            'minibus', 'bus' => in_array('sewa_bus', $aktif, true),
+            default => true,
+        }, ARRAY_FILTER_USE_KEY)]);
     }
 
     /** Semua bahasa yang didukung aplikasi (tanpa melihat saklar multi_bahasa). @return array<string, string> */

@@ -115,4 +115,65 @@ class Laporan
             ->map(fn ($g) => (float) $g->sum('total_idr'))
             ->sortDesc();
     }
+
+    /** Booking sewa dari order terbayar yang jadwalnya beririsan dengan periode ini. */
+    private function bookingTerpakai(): Collection
+    {
+        return \App\Models\BookingSewa::query()
+            ->whereHas('order', fn (Builder $o) => $o->whereIn('status', self::STATUS_TERBAYAR))
+            ->where('mulai', '<', $this->sampai->copy()->utc())
+            ->where('selesai', '>', $this->dari->copy()->utc())
+            ->with('tipe')
+            ->get();
+    }
+
+    /**
+     * Utilisasi armada per kendaraan: jam tersewa (yang jatuh di periode) dibagi
+     * kapasitas (unit siap × jam periode).
+     *
+     * @return Collection<string, float> nama kendaraan => persen (0–100)
+     */
+    public function utilisasiArmada(): Collection
+    {
+        $dari = \Carbon\CarbonImmutable::instance($this->dari)->utc();
+        $sampai = \Carbon\CarbonImmutable::instance($this->sampai)->utc();
+        $jamPeriode = max(1, $dari->diffInHours($sampai));
+
+        $tersewa = $this->bookingTerpakai()
+            ->groupBy('tipe_kendaraan_id')
+            ->map(fn ($g) => $g->sum(fn ($b) => max(0, ($b->mulai->max($dari))->diffInHours($b->selesai->min($sampai)))));
+
+        return \App\Models\TipeKendaraan::query()
+            ->withCount(['unit as unit_siap_count' => fn (Builder $u) => $u->where('status', \App\Models\UnitKendaraan::SIAP)])
+            ->orderBy('urutan')
+            ->get()
+            ->filter(fn ($t) => $t->unit_siap_count > 0)
+            ->mapWithKeys(fn ($t) => [$t->nama('id') => round(min(100, 100 * ($tersewa[$t->id] ?? 0) / ($t->unit_siap_count * $jamPeriode)), 1)]);
+    }
+
+    /** @return float persen utilisasi seluruh armada di periode ini */
+    public function utilisasiTotal(): float
+    {
+        $dari = \Carbon\CarbonImmutable::instance($this->dari)->utc();
+        $sampai = \Carbon\CarbonImmutable::instance($this->sampai)->utc();
+        $kapasitas = \App\Models\UnitKendaraan::query()->where('status', \App\Models\UnitKendaraan::SIAP)->count() * max(1, $dari->diffInHours($sampai));
+        if (! $kapasitas) {
+            return 0.0;
+        }
+        $tersewa = $this->bookingTerpakai()->sum(fn ($b) => max(0, ($b->mulai->max($dari))->diffInHours($b->selesai->min($sampai))));
+
+        return round(min(100, 100 * $tersewa / $kapasitas), 1);
+    }
+
+    /** @return Collection<string, float> nama kendaraan => pendapatan IDR (order dibayar di periode) */
+    public function pendapatanPerKendaraan(): Collection
+    {
+        return $this->orderTerbayar()
+            ->whereHas('bookingSewa')
+            ->with('bookingSewa.tipe')
+            ->get(['id', 'total_idr'])
+            ->groupBy(fn (Order $o) => $o->bookingSewa->tipe?->nama('id') ?? 'Kendaraan terhapus')
+            ->map(fn ($g) => (float) $g->sum('total_idr'))
+            ->sortDesc();
+    }
 }

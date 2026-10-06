@@ -45,5 +45,5 @@ return [
 
     // Data katalog awal (relatif ke folder toko/), null = katalog contoh bawaan
     // database/data/katalog-demo.php dengan foto siluet.
-    'katalog' => null,
+    'katalog' => 'katalog-travel.php',
 ];

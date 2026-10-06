@@ -23,6 +23,12 @@ use UnitEnum;
 /** Ringkasan stok semua varian + ubah stok cepat (restock / koreksi). */
 class StockResource extends Resource
 {
+    /** Travel: menu toko barang disembunyikan (config travel.menu_toko_barang). */
+    public static function shouldRegisterNavigation(): bool
+    {
+        return config('travel.menu_toko_barang') && parent::shouldRegisterNavigation();
+    }
+
     protected static ?string $model = Stock::class;
 
     protected static string | BackedEnum | null $navigationIcon = Heroicon::OutlinedCube;

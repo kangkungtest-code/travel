@@ -9,6 +9,12 @@
 */
 
 return [
+    /*
+     * Menu & halaman toko barang bawaan e-commerce (produk, kategori, stok, ongkir, retur).
+     * Untuk travel disembunyikan dari menu; kode & datanya tetap ada.
+     */
+    'menu_toko_barang' => (bool) env('TRAVEL_MENU_TOKO_BARANG', false),
+
     /* Mode sewa. Label dipakai di panel (id) & storefront. */
     'mode' => [
         'lepas_kunci' => ['id' => 'Lepas kunci', 'en' => 'Self-drive', 'zh_TW' => '自駕'],

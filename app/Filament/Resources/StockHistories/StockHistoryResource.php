@@ -17,6 +17,12 @@ use UnitEnum;
 /** Riwayat pergerakan stok (hanya baca). */
 class StockHistoryResource extends Resource
 {
+    /** Travel: menu toko barang disembunyikan (config travel.menu_toko_barang). */
+    public static function shouldRegisterNavigation(): bool
+    {
+        return config('travel.menu_toko_barang') && parent::shouldRegisterNavigation();
+    }
+
     protected static ?string $model = StockHistory::class;
 
     protected static string | BackedEnum | null $navigationIcon = Heroicon::OutlinedClock;

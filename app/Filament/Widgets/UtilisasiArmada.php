@@ -3,13 +3,12 @@
 namespace App\Filament\Widgets;
 
 use App\Support\Laporan;
-use Filament\Support\RawJs;
 
-class PenjualanPerMetode extends GrafikDasar
+class UtilisasiArmada extends GrafikDasar
 {
-    protected static ?int $sort = 5;
+    protected static ?int $sort = 3;
 
-    protected ?string $heading = 'Pendapatan per metode bayar (IDR)';
+    protected ?string $heading = 'Utilisasi per kendaraan (%)';
 
     protected function getType(): string
     {
@@ -18,11 +17,11 @@ class PenjualanPerMetode extends GrafikDasar
 
     protected function getData(): array
     {
-        $data = Laporan::dariFilter($this->pageFilters)->perMetodeBayar();
+        $data = Laporan::dariFilter($this->pageFilters)->utilisasiArmada();
 
         return [
             'datasets' => [[
-                'label' => 'Penjualan',
+                'label' => 'Utilisasi %',
                 'data' => $data->values()->all(),
                 'backgroundColor' => self::WARNA,
                 'borderRadius' => 4,
@@ -32,8 +31,11 @@ class PenjualanPerMetode extends GrafikDasar
         ];
     }
 
-    protected function getOptions(): RawJs
+    protected function getOptions(): array
     {
-        return $this->opsiRupiah(horizontal: true);
+        $opsi = $this->opsiDasar(horizontal: true);
+        $opsi['scales']['x']['max'] = 100;
+
+        return $opsi;
     }
 }

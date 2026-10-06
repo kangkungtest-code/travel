@@ -22,6 +22,12 @@ use UnitEnum;
 /** Ongkir flat: zona (kumpulan negara) + tarif per rentang berat. */
 class ShippingZoneResource extends Resource
 {
+    /** Travel: menu toko barang disembunyikan (config travel.menu_toko_barang). */
+    public static function shouldRegisterNavigation(): bool
+    {
+        return config('travel.menu_toko_barang') && parent::shouldRegisterNavigation();
+    }
+
     protected static ?string $model = ShippingZone::class;
 
     protected static string | BackedEnum | null $navigationIcon = Heroicon::OutlinedTruck;
