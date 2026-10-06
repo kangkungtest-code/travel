@@ -20,10 +20,10 @@ class ListOrders extends ListRecords
 
         return [
             'semua' => Tab::make('Semua'),
-            'perlu_diproses' => $tab('Perlu diproses', [Order::STATUS_DIBAYAR]),
+            'perlu_diproses' => $tab('Perlu dikonfirmasi', [Order::STATUS_DIBAYAR]),
             'menunggu' => $tab('Menunggu bayar', [Order::STATUS_MENUNGGU_PEMBAYARAN]),
-            'diproses' => $tab('Diproses', [Order::STATUS_DIPROSES]),
-            'dikirim' => $tab('Dikirim', [Order::STATUS_DIKIRIM]),
+            'diproses' => $tab('Dikonfirmasi', [Order::STATUS_DIPROSES]),
+            'dikirim' => $tab('Berjalan', [Order::STATUS_DIKIRIM]),
             'selesai' => $tab('Selesai', [Order::STATUS_SELESAI]),
             'batal' => Tab::make('Batal / kadaluarsa')
                 ->modifyQueryUsing(fn (Builder $query) => $query->whereIn('status', [Order::STATUS_DIBATALKAN, Order::STATUS_KADALUARSA])),

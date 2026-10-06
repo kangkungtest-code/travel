@@ -96,3 +96,9 @@ Route::middleware('auth:web')->group(function () {
 // Webhook payment gateway (tanpa CSRF & sesi; diverifikasi per gateway).
 Route::post('/webhook/paypal', [WebhookPembayaranController::class, 'paypal'])->middleware('throttle:120,1')->name('webhook.paypal');
 Route::post('/webhook/xendit', [WebhookPembayaranController::class, 'xendit'])->middleware('throttle:120,1')->name('webhook.xendit');
+
+// Dokumen penyewa untuk admin (disk privat).
+Route::get('/admin/dokumen-sewa/{booking}/{jenis}', \App\Http\Controllers\Admin\DokumenSewaController::class)
+    ->whereIn('jenis', ['identitas', 'sim'])
+    ->middleware('auth:admin')
+    ->name('admin.dokumen-sewa');

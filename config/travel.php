@@ -65,7 +65,12 @@ return [
         /* Dokumen wajib untuk lepas kunci. Disimpan di disk privat. */
         'disk_dokumen' => 'local',
         'maks_dokumen_kb' => 5120,
+        /* Terlambat kembali kurang dari ini tidak dihitung (menit). */
+        'toleransi_telat_menit' => 30,
     ],
+
+    /* Pilihan level BBM saat serah terima / pengembalian. */
+    'level_bbm' => ['penuh' => 'Penuh', '3/4' => '3/4', '1/2' => '1/2', '1/4' => '1/4', 'kosong' => 'Hampir kosong'],
 
     'foto' => [
         'directory' => 'kendaraan',

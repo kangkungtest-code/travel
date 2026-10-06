@@ -40,10 +40,11 @@ class UbahStatusOrderAction
 
                 case Order::STATUS_DIKIRIM:
                     $resi = trim((string) ($data['resi'] ?? ''));
-                    if ($resi === '') {
+                    // Booking sewa: "dikirim" = kendaraan diserahkan, tanpa resi.
+                    if ($resi === '' && $order->sumber_order !== 'sewa') {
                         throw new TokoException(__('A tracking number is required to mark the order as shipped.'));
                     }
-                    $atribut['resi'] = $resi;
+                    $atribut['resi'] = $resi ?: null;
                     $atribut['dikirim_pada'] = now();
                     break;
 
@@ -63,7 +64,7 @@ class UbahStatusOrderAction
             return $order;
         });
 
-        if ($ke === Order::STATUS_DIKIRIM) {
+        if ($ke === Order::STATUS_DIKIRIM && $order->sumber_order !== 'sewa') {
             $order->user?->notify(new OrderDikirim($order));
         }
 

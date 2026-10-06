@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Orders;
 
 use App\Filament\Resources\Orders\Pages\ListOrders;
 use App\Filament\Resources\Orders\Pages\ViewOrder;
+use App\Filament\Resources\Orders\Schemas\SewaInfolist;
 use App\Filament\Support\LabelAdmin;
 use App\Models\Order;
 use App\Models\OrderItem;
@@ -29,17 +30,19 @@ class OrderResource extends Resource
 {
     protected static ?string $model = Order::class;
 
-    protected static string | BackedEnum | null $navigationIcon = Heroicon::OutlinedShoppingCart;
+    protected static string | BackedEnum | null $navigationIcon = Heroicon::OutlinedCalendarDays;
 
     protected static string | UnitEnum | null $navigationGroup = 'Penjualan';
 
     protected static ?int $navigationSort = 1;
 
-    protected static ?string $modelLabel = 'order';
+    protected static ?string $slug = 'booking';
 
-    protected static ?string $pluralModelLabel = 'order';
+    protected static ?string $modelLabel = 'booking';
 
-    protected static ?string $navigationLabel = 'Order';
+    protected static ?string $pluralModelLabel = 'booking';
+
+    protected static ?string $navigationLabel = 'Booking';
 
     protected static ?string $recordTitleAttribute = 'nomor';
 
@@ -52,7 +55,7 @@ class OrderResource extends Resource
 
     public static function getNavigationBadgeTooltip(): ?string
     {
-        return 'Sudah dibayar, perlu diproses';
+        return 'Sudah dibayar, perlu dikonfirmasi';
     }
 
     public static function uang(Order $o, $nilai): string
@@ -63,14 +66,22 @@ class OrderResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->modifyQueryUsing(fn (Builder $query) => $query->with('user'))
+            ->modifyQueryUsing(fn (Builder $query) => $query->with(['user', 'bookingSewa.tipe', 'bookingSewa.unit']))
             ->defaultSort('created_at', 'desc')
             ->columns([
                 TextColumn::make('nomor')->label('Nomor')->searchable()->weight('bold'),
                 TextColumn::make('created_at')->label('Tanggal')->dateTime('d M Y H:i', config('toko.zona_waktu'))->sortable(),
-                TextColumn::make('user.nama_lengkap')->label('Pembeli')
-                    ->description(fn (Order $o) => $o->user?->email)
+                TextColumn::make('user.nama_lengkap')->label('Penyewa')
+                    ->state(fn (Order $o) => $o->bookingSewa?->nama_penyewa ?? $o->user?->nama_lengkap)
+                    ->description(fn (Order $o) => $o->bookingSewa?->telepon ?? $o->user?->email)
                     ->searchable(['nama_lengkap', 'email']),
+                TextColumn::make('kendaraan')->label('Kendaraan')
+                    ->state(fn (Order $o) => $o->bookingSewa?->tipe?->nama('id'))
+                    ->description(fn (Order $o) => $o->bookingSewa ? ($o->bookingSewa->unit?->plat_nomor ?? 'tanpa unit').' · '.\App\Support\Spesifikasi::label('mode', $o->bookingSewa->mode, 'id') : null)
+                    ->placeholder('—'),
+                TextColumn::make('jadwal')->label('Jadwal')
+                    ->state(fn (Order $o) => $o->bookingSewa ? $o->bookingSewa->mulai->timezone(config('toko.zona_waktu'))->format('d M H:i').' → '.$o->bookingSewa->selesai->timezone(config('toko.zona_waktu'))->format('d M H:i') : null)
+                    ->placeholder('—'),
                 TextColumn::make('status')->badge()
                     ->formatStateUsing(fn (string $state) => LabelAdmin::STATUS_ORDER[$state] ?? $state)
                     ->color(fn (string $state) => LabelAdmin::WARNA_ORDER[$state] ?? 'gray'),
@@ -78,8 +89,7 @@ class OrderResource extends Resource
                     ->formatStateUsing(fn (Order $o) => self::uang($o, $o->total))
                     ->description(fn (Order $o) => $o->mata_uang !== 'IDR' ? LabelAdmin::rupiah($o->total_idr) : null),
                 TextColumn::make('negara')->label('Negara')
-                    ->state(fn (Order $o) => $o->alamat_snapshot['negara'] ?? null)->toggleable(),
-                TextColumn::make('resi')->label('Resi')->placeholder('—')->toggleable(isToggledHiddenByDefault: true),
+                    ->state(fn (Order $o) => $o->alamat_snapshot['negara'] ?? null)->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 SelectFilter::make('status')->options(LabelAdmin::STATUS_ORDER)->multiple(),
@@ -111,16 +121,23 @@ class OrderResource extends Resource
                         TextEntry::make('kadaluarsa_pada')->label('Batas bayar')->dateTime('d M Y H:i', config('toko.zona_waktu'))
                             ->visible(fn (Order $o) => $o->status === Order::STATUS_MENUNGGU_PEMBAYARAN),
                         TextEntry::make('dibayar_pada')->label('Dibayar')->dateTime('d M Y H:i', config('toko.zona_waktu'))->placeholder('—'),
-                        TextEntry::make('resi')->label('Resi')->placeholder('—')->copyable(),
-                        TextEntry::make('user.nama_lengkap')->label('Pembeli')
+                        TextEntry::make('resi')->label('Resi')->placeholder('—')->copyable()
+                            ->visible(fn (Order $o) => ! $o->bookingSewa),
+                        TextEntry::make('user.nama_lengkap')->label('Akun')
                             ->helperText(fn (Order $o) => $o->user?->email),
                     ]),
 
                 Section::make('Pembayaran')
                     ->columnSpan(1)
                     ->schema([
-                        TextEntry::make('subtotal')->formatStateUsing(fn (Order $o) => self::uang($o, $o->subtotal)),
+                        TextEntry::make('subtotal')->formatStateUsing(fn (Order $o) => self::uang($o, $o->subtotal))
+                            ->visible(fn (Order $o) => ! $o->bookingSewa),
+                        TextEntry::make('rincian_sewa')->label('Rincian sewa')
+                            ->visible(fn (Order $o) => (bool) $o->bookingSewa)
+                            ->state(fn (Order $o) => self::rincianSewa($o))
+                            ->extraAttributes(['style' => 'white-space: pre-line']),
                         TextEntry::make('ongkir')->label('Ongkir')
+                            ->visible(fn (Order $o) => ! $o->bookingSewa)
                             ->formatStateUsing(fn (Order $o) => self::uang($o, $o->ongkir))
                             ->helperText(fn (Order $o) => number_format($o->berat_gram / 1000, 2).' kg'),
                         TextEntry::make('total')->weight('bold')
@@ -130,7 +147,10 @@ class OrderResource extends Resource
                                 : null),
                     ]),
 
+                SewaInfolist::section(),
+
                 Section::make('Barang')
+                    ->visible(fn (Order $o) => ! $o->bookingSewa)
                     ->columnSpan(2)
                     ->schema([
                         RepeatableEntry::make('items')
@@ -147,6 +167,7 @@ class OrderResource extends Resource
                     ]),
 
                 Section::make('Kirim ke')
+                    ->visible(fn (Order $o) => ! $o->bookingSewa)
                     ->columnSpan(1)
                     ->schema([
                         TextEntry::make('alamat')
@@ -198,6 +219,20 @@ class OrderResource extends Resource
                             ]),
                     ]),
             ]);
+    }
+
+    /** Rincian harga sewa (IDR) dari snapshot booking. */
+    public static function rincianSewa(Order $o): string
+    {
+        $r = $o->bookingSewa?->rincian ?? [];
+        $rp = fn ($n) => LabelAdmin::rupiah($n);
+
+        return collect([
+            ($r['hari'] ?? 0) ? $r['hari'].' hari × '.$rp($r['harga_hari']) : null,
+            ($r['sisa_jam'] ?? 0) ? 'Tambahan '.$r['sisa_jam'].' jam: '.$rp($r['harga_sisa']) : null,
+            ($r['tambahan_musim'] ?? 0) ? 'Musim ramai: +'.$rp($r['tambahan_musim']) : null,
+            ($r['jam_ditagih'] ?? 0) > ($r['durasi_jam'] ?? 0) ? 'Minimal sewa '.$r['jam_ditagih'].' jam' : null,
+        ])->filter()->implode("\n");
     }
 
     public static function getPages(): array

@@ -121,7 +121,7 @@ class KontakNotifikasiTest extends TestCase
                 && str_contains($mail->subject, $order->nomor)
                 && str_contains($teks, 'Kaos Hitam')
                 && str_contains($teks, 'Rp220.000')
-                && str_contains($mail->actionUrl, '/admin/orders/');
+                && str_contains($mail->actionUrl, '/admin/booking/');
         });
     }
 

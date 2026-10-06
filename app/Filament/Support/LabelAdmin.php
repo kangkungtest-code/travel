@@ -11,8 +11,8 @@ class LabelAdmin
     public const STATUS_ORDER = [
         Order::STATUS_MENUNGGU_PEMBAYARAN => 'Menunggu bayar',
         Order::STATUS_DIBAYAR => 'Dibayar',
-        Order::STATUS_DIPROSES => 'Diproses',
-        Order::STATUS_DIKIRIM => 'Dikirim',
+        Order::STATUS_DIPROSES => 'Dikonfirmasi',
+        Order::STATUS_DIKIRIM => 'Berjalan',
         Order::STATUS_SELESAI => 'Selesai',
         Order::STATUS_KADALUARSA => 'Kadaluarsa',
         Order::STATUS_DIBATALKAN => 'Dibatalkan',

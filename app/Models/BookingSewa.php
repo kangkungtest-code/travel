@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /** Detail sewa sebuah order (satu kendaraan per booking). */
-#[Fillable(['order_id', 'tipe_kendaraan_id', 'unit_kendaraan_id', 'lokasi_id', 'mode', 'mulai', 'selesai', 'nama_penyewa', 'telepon', 'catatan', 'rincian', 'dokumen'])]
+#[Fillable(['order_id', 'tipe_kendaraan_id', 'unit_kendaraan_id', 'lokasi_id', 'mode', 'mulai', 'selesai', 'nama_penyewa', 'telepon', 'catatan', 'rincian', 'dokumen', 'sopir', 'serah_terima', 'pengembalian'])]
 class BookingSewa extends Model
 {
     use HasUuids;
@@ -24,6 +24,9 @@ class BookingSewa extends Model
             'selesai' => 'immutable_datetime',
             'rincian' => 'array',
             'dokumen' => 'array',
+            'sopir' => 'array',
+            'serah_terima' => 'array',
+            'pengembalian' => 'array',
         ];
     }
 
