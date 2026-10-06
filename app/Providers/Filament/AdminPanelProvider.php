@@ -44,7 +44,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
             ->widgets([])
-            ->navigationGroups(['Penjualan', 'Katalog', 'Konten', 'Pengaturan'])
+            ->navigationGroups(['Penjualan', 'Armada', 'Katalog', 'Konten', 'Pengaturan'])
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,

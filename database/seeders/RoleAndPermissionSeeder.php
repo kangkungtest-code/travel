@@ -11,6 +11,7 @@ class RoleAndPermissionSeeder extends Seeder
 {
     /** Semua permission staff, format `modul.aksi`. */
     public const PERMISSIONS = [
+        'armada.kelola',
         'produk.kelola',
         'stok.edit',
         'order.lihat',
@@ -40,6 +41,7 @@ class RoleAndPermissionSeeder extends Seeder
 
     /** Label izin untuk halaman Peran (yang bisa diberikan ke staf = PERMISSIONS). */
     public const LABEL = [
+        'armada.kelola' => 'Kelola armada (lokasi, kendaraan, unit)',
         'produk.kelola' => 'Kelola produk & kategori',
         'stok.edit' => 'Ubah stok',
         'order.lihat' => 'Lihat pesanan',
