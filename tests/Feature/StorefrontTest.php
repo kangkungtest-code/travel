@@ -39,9 +39,9 @@ class StorefrontTest extends TestCase
 
     public function test_beranda_default_english_dan_usd(): void
     {
-        $this->get('/')
+        $this->get('/')->assertOk()->assertSee('lang="en"', false);
+        $this->get(route('produk.index'))
             ->assertOk()
-            ->assertSee('lang="en"', false)
             ->assertSee('Black T-Shirt')
             ->assertSee('from $6.00');
     }

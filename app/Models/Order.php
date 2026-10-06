@@ -84,6 +84,12 @@ class Order extends Model
         return $this->hasMany(OrderItem::class);
     }
 
+    /** Detail sewa kendaraan (travel). */
+    public function bookingSewa(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(BookingSewa::class);
+    }
+
     public function payments(): HasMany
     {
         return $this->hasMany(Payment::class);

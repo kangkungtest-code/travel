@@ -14,10 +14,16 @@ use App\Http\Controllers\Toko\PembayaranController;
 use App\Http\Controllers\Toko\PesananController;
 use App\Http\Controllers\WebhookPembayaranController;
 use App\Http\Controllers\Toko\PreferensiController;
+use App\Http\Controllers\Toko\SewaController;
 use Illuminate\Support\Facades\Route;
 
-// Katalog (tanpa login)
-Route::get('/', [KatalogController::class, 'home'])->name('home');
+// Sewa kendaraan (tanpa login untuk mencari; memesan wajib login)
+Route::get('/', [SewaController::class, 'home'])->name('home');
+Route::get('/sewa', [SewaController::class, 'index'])->name('sewa.index');
+Route::get('/sewa/{kendaraan}', [SewaController::class, 'show'])->name('sewa.show');
+Route::post('/sewa/{kendaraan}/pesan', [SewaController::class, 'pesan'])->middleware(['auth:web', 'terverifikasi', 'throttle:10,1'])->name('sewa.pesan');
+
+// Katalog barang (bawaan e-commerce, tidak ditautkan dari menu travel)
 Route::get('/produk', [KatalogController::class, 'index'])->name('produk.index');
 Route::get('/produk/{product}', [KatalogController::class, 'show'])->name('produk.show');
 Route::get('/faq', [KatalogController::class, 'faq'])->name('faq');

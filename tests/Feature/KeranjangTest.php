@@ -74,6 +74,6 @@ class KeranjangTest extends TestCase
         $cart = $user->fresh()->cart;
         $this->assertSame(2, $cart->items()->first()->qty);
         $this->assertSame(1, Cart::count());
-        $this->get('/')->assertSee('<span class="jumlah"', false);
+        $this->get(route('keranjang'))->assertOk();
     }
 }

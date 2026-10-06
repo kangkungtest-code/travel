@@ -39,6 +39,27 @@
                     </section>
                 @endif
 
+                @if ($o['sewa'])
+                    @php($sw = $o['sewa'])
+                    <section class="blok">
+                        <h2>{{ __('Your rental') }}</h2>
+                        <div class="barang">
+                            <span class="barang-foto">@if ($sw['foto'])<img src="{{ $sw['foto'] }}" alt="" width="400" height="300" loading="lazy">@endif</span>
+                            <div class="barang-info">
+                                <span class="barang-nama">{{ $sw['nama'] }}</span>
+                                <span class="barang-opsi">{{ $sw['mode'] }} · {{ $sw['durasi'] }}</span>
+                            </div>
+                        </div>
+                        <dl class="ringkas-sewa">
+                            <div><dt>{{ __('Pick-up') }}</dt><dd>{{ $sw['mulai'] }}</dd></div>
+                            <div><dt>{{ __('Return') }}</dt><dd>{{ $sw['selesai'] }}</dd></div>
+                            <div><dt>{{ __('Location') }}</dt><dd>{{ $sw['lokasi'] }}@if ($sw['alamat_lokasi'])<br><span class="redup">{{ $sw['alamat_lokasi'] }}</span>@endif @if ($sw['jam_lokasi'])<br><span class="redup">{{ __('Open :hours', ['hours' => $sw['jam_lokasi']]) }}</span>@endif @if ($sw['peta'])<br><a href="{{ $sw['peta'] }}" target="_blank" rel="noopener">{{ __('Open map') }}</a>@endif</dd></div>
+                            @if ($sw['unit'])<div><dt>{{ __('Plate number') }}</dt><dd><strong>{{ $sw['unit'] }}</strong></dd></div>@endif
+                            <div><dt>{{ __('Renter') }}</dt><dd>{{ $sw['penyewa'] }}</dd></div>
+                            @if ($sw['catatan'])<div><dt>{{ __('Notes') }}</dt><dd>{{ $sw['catatan'] }}</dd></div>@endif
+                        </dl>
+                    </section>
+                @else
                 <section class="blok">
                     <h2>{{ __('Items') }}</h2>
                     <ul class="daftar-barang">
@@ -58,6 +79,7 @@
                         @endforeach
                     </ul>
                 </section>
+                @endif
 
                 @if ($o['retur'])
                     @php($r = $o['retur'])
@@ -93,6 +115,7 @@
                     </details>
                 @endif
 
+                @unless ($o['sewa'])
                 <section class="blok">
                     <h2>{{ __('Ship to') }}</h2>
                     <p>
@@ -101,6 +124,7 @@
                         {{ $o['alamat']['kota'] ?? '' }} {{ $o['alamat']['kode_pos'] ?? '' }}, {{ $o['nama_negara'] }}
                     </p>
                 </section>
+                @endunless
             </div>
 
             <aside class="ringkasan">
@@ -112,16 +136,18 @@
                     </ol>
                 @endif
                 <dl>
+                    @unless ($o['sewa'])
                     <div><dt>{{ __('Subtotal') }}</dt><dd>{{ $o['subtotal'] }}</dd></div>
                     <div><dt>{{ __('Shipping (:kg kg)', ['kg' => $o['berat_kg']]) }}</dt><dd>{{ $o['ongkir'] }}</dd></div>
+                    @endunless
                     <div class="ringkasan-total"><dt>{{ __('Total') }}</dt><dd>{{ $o['total'] }}</dd></div>
                 </dl>
                 <p class="catatan">{{ __('Prices locked in :currency when the order was placed.', ['currency' => $o['mata_uang']]) }}</p>
 
                 @if ($o['menunggu'])
-                    <form method="post" action="{{ route('akun.pesanan.batal', $o['nomor']) }}" onsubmit="return confirm(@js(__('Cancel this order? The items go back on sale.')))">
+                    <form method="post" action="{{ route('akun.pesanan.batal', $o['nomor']) }}" onsubmit="return confirm(@js($o['sewa'] ? __('Cancel this booking?') : __('Cancel this order? The items go back on sale.')))">
                         @csrf
-                        <button type="submit" class="tombol tombol-garis tombol-lebar">{{ __('Cancel order') }}</button>
+                        <button type="submit" class="tombol tombol-garis tombol-lebar">{{ $o['sewa'] ? __('Cancel booking') : __('Cancel order') }}</button>
                     </form>
                 @endif
             </aside>

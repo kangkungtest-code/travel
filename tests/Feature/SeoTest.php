@@ -117,7 +117,8 @@ class SeoTest extends TestCase
         $this->get('/admin/login')->assertHeader('X-Robots-Tag', 'noindex, nofollow');
 
         // Beranda: data WebSite + gambar preview gabungan.
-        $this->get(route('home'))->assertSee('"@type":"WebSite"', false)->assertSee('/og/toko-', false);
+        $this->get(route('home'))->assertSee('"@type":"WebSite"', false);
+        $this->get(route('produk.index'))->assertSee('/og/toko-', false);
     }
 
     public function test_sitemap(): void

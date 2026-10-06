@@ -46,7 +46,7 @@
             <a class="wordmark" href="{{ route('home') }}">@if ($logo)<img class="logo" src="{{ $logo }}" alt="" width="40" height="40">@endif{{ config('toko.nama') }}</a>
 
             <nav class="nav" aria-label="{{ __('Main navigation') }}">
-                <a href="{{ route('produk.index') }}" @class(['aktif' => request()->routeIs('produk.*')])>{{ __('Shop') }}</a>
+                <a href="{{ route('sewa.index') }}" @class(['aktif' => request()->routeIs('sewa.*')])>{{ __('Vehicles') }}</a>
                 <a href="{{ route('faq') }}" @class(['aktif' => request()->routeIs('faq')])>{{ __('FAQ') }}</a>
             </nav>
 
@@ -56,9 +56,6 @@
                 @else
                     <a href="{{ route('login') }}" data-masuk @class(['aktif' => request()->routeIs('login', 'daftar')])>{{ __('Sign in') }}</a>
                 @endif
-                <a href="{{ route('keranjang') }}" class="keranjang-link" @if (request()->routeIs('keranjang')) aria-current="page" @endif>
-                    {{ __('Cart') }}<span class="jumlah" aria-label="{{ trans_choice('{0} empty|{1} :count item|[2,*] :count items', $jumlahKeranjang) }}">{{ $jumlahKeranjang }}</span>
-                </a>
             </div>
 
             <form class="prefs" method="post" action="{{ route('preferensi') }}" data-auto-submit>

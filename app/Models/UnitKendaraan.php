@@ -44,6 +44,11 @@ class UnitKendaraan extends Model
         return $this->belongsTo(Lokasi::class);
     }
 
+    public function booking(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(BookingSewa::class);
+    }
+
     public static function rapikanPlat(string $plat): string
     {
         return trim((string) preg_replace('/\s+/', ' ', mb_strtoupper($plat)));

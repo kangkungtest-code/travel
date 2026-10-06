@@ -53,6 +53,20 @@ return [
         'nonaktif' => 'Nonaktif',
     ],
 
+    'booking' => [
+        /* Jeda antar sewa di unit yang sama (bersih-bersih, cek kendaraan), jam. */
+        'jeda_jam' => (int) env('TRAVEL_JEDA_JAM', 2),
+        /* Pesanan paling cepat sekian jam dari sekarang. */
+        'minimal_jam_dari_sekarang' => (int) env('TRAVEL_MINIMAL_JAM_DARI_SEKARANG', 3),
+        /* Lama sewa maksimal (hari). */
+        'maks_hari' => 30,
+        /* Pesan paling jauh sekian hari ke depan. */
+        'maks_hari_ke_depan' => 365,
+        /* Dokumen wajib untuk lepas kunci. Disimpan di disk privat. */
+        'disk_dokumen' => 'local',
+        'maks_dokumen_kb' => 5120,
+    ],
+
     'foto' => [
         'directory' => 'kendaraan',
         'max_per_tipe' => 8,

@@ -39,7 +39,7 @@ class ProfilTokoTest extends TestCase
 
         $this->assertSame('', Tema::css());
         $this->assertNull(Tema::logo());
-        $this->get('/')->assertOk()->assertSee('Everyday basics in honest colors.')->assertDontSee('class="logo"', false);
+        $this->get('/')->assertOk()->assertSee('Rent a vehicle, with or without a driver')->assertDontSee('class="logo"', false);
     }
 
     public function test_logo_yang_filenya_tidak_ada_diabaikan(): void

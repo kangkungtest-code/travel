@@ -700,3 +700,62 @@ label.kartu-alamat input { margin-top: .3rem; accent-color: var(--kangkung); }
 .blok-bahaya details[open] summary::after { content: " ⌄"; }
 .tombol-bahaya { background: var(--brick); }
 .tombol-bahaya:hover { background: #87361f; }
+
+/* ---------- Sewa kendaraan ---------- */
+.hero-sewa { align-items: end; }
+.kotak-cari {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: clamp(1rem, 3vw, 1.5rem);
+}
+.form-cari { display: grid; gap: 1rem; }
+.form-cari input[type="datetime-local"], .form-cari select { width: 100%; }
+.form-cari .tombol { width: 100%; }
+.cari-mode { border: 0; padding: 0; margin: 0; }
+.cari-mode legend { padding: 0; margin-bottom: .35rem; }
+.cari-zona { text-align: center; }
+.kotak-cari-baris { margin-bottom: 1.5rem; }
+@media (min-width: 900px) {
+    .kotak-cari-baris .form-cari { grid-template-columns: 1.2fr 1fr 1fr auto auto; align-items: end; }
+    .kotak-cari-baris .cari-zona { grid-column: 1 / -1; text-align: left; margin-top: -.5rem; }
+    .kotak-cari-baris .tombol { width: auto; }
+}
+.kotak-cari-kecil { margin-bottom: 1.5rem; }
+
+.kartu-penuh { opacity: .55; }
+.kartu-penuh:hover { opacity: .8; }
+.kartu-foto { aspect-ratio: 4 / 3; }
+.galeri-utama { aspect-ratio: 4 / 3; }
+.kendaraan-siluet { color: var(--kangkung); opacity: .6; }
+
+.spek { margin-top: 1.5rem; }
+.spek-ringkas { font-weight: 600; margin: 0 0 .75rem; }
+.fasilitas { list-style: none; padding: 0; margin: 0 0 1rem; display: flex; flex-wrap: wrap; gap: .4rem; }
+.fasilitas li { border: 1px solid var(--line); border-radius: var(--radius-kontrol); padding: .2rem .7rem; font-size: .875rem; }
+.tabel-tarif { width: 100%; border-collapse: collapse; margin-top: 1rem; font-variant-numeric: tabular-nums; }
+.tabel-tarif th, .tabel-tarif td { text-align: left; padding: .55rem .5rem .55rem 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+.tabel-tarif thead th { font-size: .8125rem; color: var(--ink-soft); font-weight: 600; }
+
+.rincian { border-top: 1px solid var(--line); padding-top: 1.25rem; margin-bottom: 1.5rem; }
+.rincian-judul { font-size: 1.125rem; margin: 0 0 .75rem; }
+.rincian dl { margin: 0; display: grid; gap: .4rem; }
+.rincian dl > div { display: flex; justify-content: space-between; gap: 1rem; font-variant-numeric: tabular-nums; }
+.rincian dt { color: var(--ink-soft); }
+.rincian dd { margin: 0; text-align: right; }
+.rincian-total { border-top: 1px solid var(--line); padding-top: .5rem; margin-top: .25rem; font-weight: 700; font-size: 1.125rem; }
+.rincian-total dt { color: var(--ink); }
+.form-booking { border-top: 1px solid var(--line); padding-top: 1.25rem; }
+.form-booking input[type="file"] { padding: .5rem 0; }
+.ringkas-sewa { display: grid; gap: .3rem; margin: 0 0 1rem; }
+.ringkas-sewa > div { display: grid; grid-template-columns: 9rem 1fr; gap: .75rem; }
+.ringkas-sewa dt { color: var(--ink-soft); }
+.ringkas-sewa dd { margin: 0; }
+.judul-sewa { margin-bottom: 1rem; }
+.produk-sewa { grid-template-areas: "galeri info" "spek info"; }
+.produk-sewa .galeri { grid-area: galeri; }
+.produk-sewa .info { grid-area: info; position: static; }
+.produk-sewa .spek { grid-area: spek; margin-top: 0; }
+@media (max-width: 760px) {
+    .produk-sewa { grid-template-areas: "galeri" "info" "spek"; grid-template-columns: minmax(0, 1fr); }
+}
