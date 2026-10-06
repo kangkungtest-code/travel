@@ -141,10 +141,15 @@ class ArmadaTest extends TestCase
         $this->assertFalse(TipeKendaraan::tampil()->exists());
 
         $unit = $tipe->unit()->create(['plat_nomor' => 'DK 1 A', 'lokasi_id' => $lokasi->id, 'status' => UnitKendaraan::PERAWATAN]);
+        $tipe->tarif()->create(['mode' => 'lepas_kunci', 'harga_harian' => 300000]);
         $this->assertFalse(TipeKendaraan::tampil()->exists());
 
         $unit->update(['status' => UnitKendaraan::SIAP]);
         $this->assertTrue(TipeKendaraan::tampil()->exists());
+
+        $tipe->tarif()->update(['is_active' => false]);
+        $this->assertFalse(TipeKendaraan::tampil()->exists());
+        $tipe->tarif()->update(['is_active' => true]);
 
         $tipe->update(['is_active' => false]);
         $this->assertFalse(TipeKendaraan::tampil()->exists());

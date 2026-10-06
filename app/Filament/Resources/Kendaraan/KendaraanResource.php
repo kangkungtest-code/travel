@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Kendaraan;
 use App\Filament\Resources\Kendaraan\Pages\CreateKendaraan;
 use App\Filament\Resources\Kendaraan\Pages\EditKendaraan;
 use App\Filament\Resources\Kendaraan\Pages\ListKendaraan;
+use App\Filament\Resources\Kendaraan\RelationManagers\TarifRelationManager;
 use App\Filament\Resources\Kendaraan\RelationManagers\UnitRelationManager;
 use App\Models\TipeKendaraan;
 use App\Models\UnitKendaraan;
@@ -84,7 +85,7 @@ class KendaraanResource extends Resource
                     ->schema([
                         Toggle::make('is_active')
                             ->label('Tampil di situs')
-                            ->helperText('Tetap tersembunyi selama belum ada unit berstatus "Siap disewa".')
+                            ->helperText('Tetap tersembunyi selama belum ada tarif aktif dan unit berstatus "Siap disewa".')
                             ->default(true),
                         TextInput::make('slug')
                             ->label('Alamat halaman')
@@ -142,7 +143,7 @@ class KendaraanResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->modifyQueryUsing(fn (Builder $query) => $query->with('foto')->withCount([
+            ->modifyQueryUsing(fn (Builder $query) => $query->with(['foto', 'tarif'])->withCount([
                 'unit',
                 'unit as unit_siap_count' => fn (Builder $u) => $u->where('status', UnitKendaraan::SIAP),
             ]))
@@ -169,6 +170,10 @@ class KendaraanResource extends Resource
                     ->label('Unit siap')
                     ->state(fn (TipeKendaraan $t) => "{$t->unit_siap_count} / {$t->unit_count}")
                     ->color(fn (TipeKendaraan $t) => $t->unit_siap_count > 0 ? null : 'danger'),
+                TextColumn::make('harga')
+                    ->label('Mulai dari')
+                    ->state(fn (TipeKendaraan $t) => ($h = $t->hargaMulai()) ? 'Rp'.number_format($h, 0, ',', '.').' / hari' : 'Belum ada tarif')
+                    ->color(fn (TipeKendaraan $t) => $t->hargaMulai() ? null : 'danger'),
                 IconColumn::make('is_active')->label('Tampil')->boolean(),
             ])
             ->filters([
@@ -179,7 +184,7 @@ class KendaraanResource extends Resource
 
     public static function getRelations(): array
     {
-        return ['unit' => UnitRelationManager::class];
+        return ['tarif' => TarifRelationManager::class, 'unit' => UnitRelationManager::class];
     }
 
     public static function getPages(): array

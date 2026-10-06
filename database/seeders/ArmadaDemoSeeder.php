@@ -3,6 +3,8 @@
 namespace Database\Seeders;
 
 use App\Models\Lokasi;
+use App\Models\Tarif;
+use App\Models\TarifMusim;
 use App\Models\TipeKendaraan;
 use App\Models\UnitKendaraan;
 use Illuminate\Database\Seeder;
@@ -53,6 +55,13 @@ class ArmadaDemoSeeder extends Seeder
                 'bagasi' => $bagasi, 'fasilitas' => $fasilitas, 'urutan' => $urutan + 1, 'is_active' => true,
             ]);
 
+            foreach (self::TARIF[$slug] ?? [] as $mode => [$harian, $jam12, $perJam, $minimal, $bbm]) {
+                Tarif::firstOrCreate(['tipe_kendaraan_id' => $tipe->id, 'mode' => $mode], [
+                    'harga_harian' => $harian, 'harga_12jam' => $jam12, 'harga_per_jam' => $perJam,
+                    'minimal_jam' => $minimal, 'termasuk_bbm' => $bbm, 'is_active' => true,
+                ]);
+            }
+
             foreach ($unit as [$plat, $kota, $tahun, $warna]) {
                 UnitKendaraan::firstOrCreate(['plat_nomor' => $plat], [
                     'tipe_kendaraan_id' => $tipe->id, 'lokasi_id' => $lokasi[$kota]->id,
@@ -60,5 +69,34 @@ class ArmadaDemoSeeder extends Seeder
                 ]);
             }
         }
+
+        foreach ([
+            ['Libur Natal & Tahun Baru', '2026-12-20', '2027-01-05', 30],
+            ['Libur sekolah pertengahan tahun', '2027-06-26', '2027-07-11', 15],
+        ] as [$nama, $mulai, $selesai, $persen]) {
+            TarifMusim::firstOrCreate(['nama' => $nama], ['mulai' => $mulai, 'selesai' => $selesai, 'kenaikan_persen' => $persen, 'is_active' => true]);
+        }
     }
+
+    /** slug => [mode => [24 jam, 12 jam, per jam, minimal jam, termasuk BBM]] */
+    private const TARIF = [
+        'honda-brio' => [
+            Tarif::LEPAS_KUNCI => [300000, 200000, 35000, 12, false],
+            Tarif::SOPIR => [750000, 550000, 60000, 12, true],
+        ],
+        'toyota-avanza' => [
+            Tarif::LEPAS_KUNCI => [400000, 275000, 45000, 12, false],
+            Tarif::SOPIR => [900000, 650000, 75000, 12, true],
+        ],
+        'toyota-innova-zenix' => [
+            Tarif::LEPAS_KUNCI => [750000, 500000, 80000, 12, false],
+            Tarif::SOPIR => [1300000, 950000, 100000, 12, true],
+        ],
+        'toyota-hiace-premio' => [
+            Tarif::SOPIR => [1600000, 1200000, 150000, 12, true],
+        ],
+        'honda-scoopy' => [
+            Tarif::LEPAS_KUNCI => [90000, 60000, null, 24, false],
+        ],
+    ];
 }

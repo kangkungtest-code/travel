@@ -9,6 +9,12 @@
 */
 
 return [
+    /* Mode sewa. Label dipakai di panel (id) & storefront. */
+    'mode' => [
+        'lepas_kunci' => ['id' => 'Lepas kunci', 'en' => 'Self-drive', 'zh_TW' => '自駕'],
+        'sopir' => ['id' => 'Dengan sopir', 'en' => 'With driver', 'zh_TW' => '附司機'],
+    ],
+
     'jenis' => [
         'mobil' => ['id' => 'Mobil', 'en' => 'Car', 'zh_TW' => '汽車'],
         'motor' => ['id' => 'Motor', 'en' => 'Scooter / motorbike', 'zh_TW' => '機車'],

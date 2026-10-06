@@ -59,6 +59,27 @@ class TipeKendaraan extends Model
         return $this->hasMany(UnitKendaraan::class);
     }
 
+    public function tarif(): HasMany
+    {
+        return $this->hasMany(Tarif::class);
+    }
+
+    /** Tarif aktif untuk mode tertentu, atau null kalau mode itu tidak ditawarkan. */
+    public function tarifUntuk(string $mode): ?Tarif
+    {
+        return $this->relationLoaded('tarif')
+            ? $this->tarif->first(fn (Tarif $t) => $t->mode === $mode && $t->is_active)
+            : $this->tarif()->where('mode', $mode)->where('is_active', true)->first();
+    }
+
+    /** Harga harian termurah dari tarif aktif ("mulai dari"), atau null. */
+    public function hargaMulai(): ?float
+    {
+        $tarif = $this->relationLoaded('tarif') ? $this->tarif->where('is_active', true) : $this->tarif()->where('is_active', true)->get();
+
+        return $tarif->min('harga_harian');
+    }
+
     public function nama(?string $locale = null): string
     {
         return (string) $this->getTranslation('nama_terjemahan', $locale ?? app()->getLocale());
@@ -77,10 +98,11 @@ class TipeKendaraan extends Model
         ]));
     }
 
-    /** Tipe aktif yang punya minimal satu unit siap. */
+    /** Tipe aktif yang punya tarif aktif dan minimal satu unit siap. */
     public function scopeTampil(Builder $query): Builder
     {
         return $query->where('is_active', true)
+            ->whereHas('tarif', fn (Builder $t) => $t->where('is_active', true))
             ->whereHas('unit', fn (Builder $u) => $u->where('status', UnitKendaraan::SIAP))
             ->orderBy('urutan')->orderBy('slug');
     }
