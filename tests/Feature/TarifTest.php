@@ -129,6 +129,11 @@ class TarifTest extends TestCase
 
         $rm = fn () => Livewire::test(TarifRelationManager::class, ['ownerRecord' => $this->tipe, 'pageClass' => EditKendaraan::class]);
 
+        // Mode yang sudah punya tarif ditolak.
+        $rm()->callAction(TestAction::make(CreateAction::class)->table(), [
+            'mode' => Tarif::LEPAS_KUNCI, 'harga_harian' => 1, 'minimal_jam' => 12,
+        ])->assertHasFormErrors(['mode' => 'unique']);
+
         $rm()->callAction(TestAction::make(CreateAction::class)->table(), [
             'mode' => Tarif::SOPIR, 'harga_harian' => 750000, 'harga_12jam' => 550000, 'minimal_jam' => 12, 'termasuk_bbm' => true,
         ])->assertHasNoFormErrors();
@@ -136,9 +141,8 @@ class TarifTest extends TestCase
         $this->assertTrue($this->tipe->tarifUntuk(Tarif::SOPIR)->termasuk_bbm);
         $this->assertSame(300000.0, $this->tipe->fresh()->hargaMulai());
 
-        $rm()->callAction(TestAction::make(CreateAction::class)->table(), [
-            'mode' => Tarif::LEPAS_KUNCI, 'harga_harian' => 1, 'minimal_jam' => 12,
-        ])->assertHasFormErrors(['mode' => 'unique']);
+        // Kedua mode sudah terisi: tombol tambah disembunyikan.
+        $rm()->assertActionHidden(TestAction::make(CreateAction::class)->table());
 
         $this->get(TarifMusimResource::getUrl('index'))->assertOk();
     }
